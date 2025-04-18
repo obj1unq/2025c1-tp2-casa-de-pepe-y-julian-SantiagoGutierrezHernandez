@@ -1,0 +1,63 @@
+import cosas.*
+import casa.*
+import cuentasbancarias.*
+
+describe "Compras"{
+    test "Compra de heladera, cama y plancha - cuenta corriente"{
+        casaDePepeYJulian.cuentaBancaria(cuentaCorriente)
+        casaDePepeYJulian.cuentaBancaria().depositar(30000)
+        casaDePepeYJulian.comprar(plancha)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(heladera)
+
+        assert.equals(casaDePepeYJulian.cantidadDeCosasCompradas(), 3)
+        assert.equals(casaDePepeYJulian.tieneAlgun(mueble), true)
+        assert.equals(casaDePepeYJulian.tieneAlgun(comida), false)
+
+        assert.equals(casaDePepeYJulian.vieneDeComprar(electrodomestico), true)
+        assert.equals(casaDePepeYJulian.vieneDeComprar(mueble), false)
+        assert.equals(casaDePepeYJulian.esDerrochona(), true)
+
+        assert.equals(casaDePepeYJulian.comprados(electrodomestico), [plancha, heladera])
+        assert.equals(casaDePepeYJulian.comprados(mueble), [cama])
+        assert.equals(casaDePepeYJulian.comprados(comida), [])
+
+        assert.equals(casaDePepeYJulian.malaEpoca(), false)
+
+        assert.equals(casaDePepeYJulian.queFaltaComprar(#{tiraDeAsado, plancha, paqueteDeFideos}), #{tiraDeAsado, paqueteDeFideos})
+        assert.equals(casaDePepeYJulian.faltaComida(), true)
+        assert.equals(casaDePepeYJulian.categoriasCompradas(), #{mueble, electrodomestico})
+    }
+    
+    test "Cuenta corriente"{
+        cuentaCorriente.depositar(20)
+        assert.equals(cuentaCorriente.saldo(), 20)
+
+        cuentaCorriente.depositar(1000)
+        assert.equals(cuentaCorriente.saldo(), 1020)
+
+        cuentaCorriente.extraer(50)
+        assert.equals(cuentaCorriente.saldo(), 970)
+
+        assert.throwsException({cuentaCorriente.extraer(2000)})
+    }
+
+    test "Cuenta con gastos"{
+        cuentaConGastos.costoOperacion(0)
+        cuentaConGastos.depositar(500)
+        assert.equals(cuentaConGastos.saldo(), 500)
+        cuentaConGastos.costoOperacion(20)
+
+        cuentaConGastos.depositar(1000)
+        assert.equals(cuentaConGastos.saldo(), 1480)
+
+        cuentaConGastos.extraer(30)
+        assert.equals(cuentaConGastos.saldo(), 1450)
+
+        assert.throwsException({ cuentaConGastos.depositar(2000) })
+        assert.equals(cuentaConGastos.saldo(), 1450)
+
+        cuentaConGastos.extraer(2000)
+        assert.equals(cuentaConGastos.saldo(), -550)
+    }
+}
